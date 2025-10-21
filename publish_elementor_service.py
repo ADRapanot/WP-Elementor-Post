@@ -13,9 +13,9 @@ except Exception:
 async def main():
     # Initialize the service
     wp_service = ElementorWordPressService(
-        base_url="https://www.idsexpress.net",  # Removed trailing slash
-        username="idsexpress@aol.com",
-        password="0rVg v8lQ Uo1s wIBA eyPo taCu",  # WordPress application password (spaces removed)
+        base_url="", # example https://www.idsexpress.net
+        username="", # example aaa@a.com
+        password="", # Application password
         cookies=_COOKIES
     )
     

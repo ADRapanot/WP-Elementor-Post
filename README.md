@@ -13,7 +13,7 @@ This README explains configuration, cookie handling, and how to run the included
 - `elementor_wordpress_service.py` — high-level service that composes Elementor/FAQ content and calls the base WordPress service.
 - `wordpress_service.py` — low-level HTTP client and helpers for interacting with the WP REST API.
 - `use_cookies.py` — example script that demonstrates loading cookies from Chrome or env and publishing FAQs.
-- `test_elementor_service.py`, `test_ufaq_items.py` — example scripts demonstrating usage.
+- `publish_elementor_service.py`, `test_ufaq_items.py` — example scripts demonstrating usage.
 - `wp_config.json` — configuration file for cookies and Elementor template id.
 - `.wp_cookies.json` — legacy cookie file (supported fallback).
 

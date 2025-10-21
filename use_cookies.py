@@ -61,9 +61,9 @@ async def main():
             print("Loaded cookies:", {k: ('<redacted>' if len(v) > 0 else '<empty>') for k, v in chrome_cookies.items()})
 
     svc = ElementorWordPressService(
-        base_url="https://www.idsexpress.net",
-        username="idsexpress@aol.com",
-        password="0rVg v8lQ Uo1s wIBA eyPo taCu",
+        base_url="", # example https://www.idsexpress.net
+        username="", # example aaa@a.com
+        password="", # Application password
         cookies=cookies
     )
 
