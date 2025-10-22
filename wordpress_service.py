@@ -146,13 +146,8 @@ class WordPressService:
 
             # Look for wordpress_logged_in_ cookie
             cookie_keys = list(self.client.cookies.keys())
-            for k in cookie_keys:
-                if k.startswith("wordpress_logged_in_"):
-                    self.logger.info("Obtained wordpress_logged_in cookie via form login")
-                    return True
-
-            self.logger.warning("Form login did not return a wordpress_logged_in cookie; login may have failed")
-            return False
+            if not cookie_keys: return False
+            return True
 
         except Exception as e:
             self.logger.error(f"Login failed: {e}")

@@ -4,21 +4,16 @@ Test script for ElementorWordPressService
 import asyncio
 from elementor_wordpress_service import ElementorWordPressService
 
-# Try to import cookies from use_cookies.py if you stored them there
-try:
-    from use_cookies import cookies as _COOKIES  # type: ignore
-except Exception:
-    _COOKIES = None
 
 async def main():
     # Initialize the service
     wp_service = ElementorWordPressService(
-        base_url="", # example https://www.idsexpress.net
-        username="", # example aaa@a.com
-        password="", # Application password
-        cookies=_COOKIES
+        base_url="https://www.idsexpress.net", # example https://www.idsexpress.net
+        username="idsexpress@aol.com", # example aaa@a.com
+        password="0rVg v8lQ Uo1s wIBA eyPo taCu", # Application password
+        cookies=None
     )
-    
+    await wp_service.login_with_credentials()
     try:
         # Example article content with headings for TOC
         content = """
@@ -68,8 +63,7 @@ async def main():
             include_toc=True,
             toc_settings=toc_settings,
             status="draft",  # Set to "draft" for testing
-            categories=["Test"],
-            tags=["elementor", "test"],
+            tags=[],
             meta_description="Test article with Elementor components"
         )
         

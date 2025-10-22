@@ -36,7 +36,7 @@ class ElementorWordPressService(WordPressService):
                     category_id = categories[0].get('id')
             except Exception as e:
                 self.logger.warning(f"Could not resolve category slug '{faq_category_slug}': {e}")
-        print(category_id)
+        
         # Post each FAQ
         for q in questions:
             question = q.get('question') or ''
@@ -61,7 +61,7 @@ class ElementorWordPressService(WordPressService):
                 self.logger.error(f"Failed to publish FAQ '{question}': {e}")
                 # continue with next item
                 continue
-        print(faq_ids)
+        print(f"FAQ ids: {faq_ids}")
         return faq_ids
     
     async def create_elementor_toc(self, settings: Optional[Dict] = None) -> str:
@@ -150,11 +150,11 @@ class ElementorWordPressService(WordPressService):
         if faq_items:
             faq_ids = await self.publish_ufaq_items(
                 questions=faq_items,
-                faq_category_slug="test",
+                faq_category_slug="",
                 status=kwargs.get('status', 'publish')  # Match post status
             )
             if faq_ids:
-                faq_shortcode = f'[ultimate-faqs include_category_ids="{",".join(map(str, faq_ids))}"]'
+                faq_shortcode = f'[ultimate-faqs  post__in_string="{",".join(map(str, faq_ids))}"]'
                 content_parts.append(faq_shortcode)
 
                 # Add FAQ Schema (JSON-LD for SEO)
