@@ -8,9 +8,9 @@ from elementor_wordpress_service import ElementorWordPressService
 async def main():
     # Initialize the service
     wp_service = ElementorWordPressService(
-        base_url="https://www.idsexpress.net", # example https://www.idsexpress.net
-        username="idsexpress@aol.com", # example aaa@a.com
-        password="0rVg v8lQ Uo1s wIBA eyPo taCu", # Application password
+        base_url="", # example https://www.aaa.com
+        username="", # example aaa@a.com
+        password="", # Application password
         cookies=None
     )
     await wp_service.login_with_credentials()
