@@ -156,6 +156,7 @@ class ElementorWordPressService(WordPressService):
             if faq_ids:
                 faq_shortcode = f'[ultimate-faqs  post__in_string="{",".join(map(str, faq_ids))}"]'
                 content_parts.append(faq_shortcode)
+                content_parts.append(f'[elementor-template id="1421"]')  # FAQ styling template
 
                 # Add FAQ Schema (JSON-LD for SEO)
                 try:

@@ -13,3 +13,4 @@ class PublishedArticle:
     title: str
     status: str
     published_at: datetime
+    meta: dict
