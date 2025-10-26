@@ -344,49 +344,6 @@ class WordPressService:
         
         toc_title = "Table of Contents"
         elementor_data = [
-            # SECTION FAQ SCHEMA
-            {
-                "id": "section_schema",
-                "elType": "section",
-                "settings": {
-                    "_margin": {"unit": "px", "top": "0", "right": "0", "bottom": "0", "left": "0", "isLinked": True},
-                    "_padding": {"unit": "px", "top": "0", "right": "0", "bottom": "0", "left": "0", "isLinked": True}
-                },
-                "elements": [
-                    {
-                        "id": "column_schema",
-                        "elType": "column",
-                        "settings": {"_column_size": 100},
-                        "elements": [
-                            {
-                                "id": "widget_schema",
-                                "elType": "widget",
-                                "widgetType": "html",
-                                "settings": {
-                                    "html": f'''<script type="application/ld+json">
-                                    {json.dumps({
-                                        "@context": "https://schema.org",
-                                        "@type": "FAQPage",
-                                        "mainEntity": [
-                                            {
-                                                "@type": "Question",
-                                                "name": item["question"],
-                                                "acceptedAnswer": {
-                                                    "@type": "Answer",
-                                                    "text": item["answer"]
-                                                }
-                                            }
-                                            for item in faq_items
-                                        ]
-                                    }, indent=2)}
-                                    </script>'''
-                                },
-                                "elements": []
-                            }
-                        ]
-                    }
-                ]
-            },
             # SECTION 1: Table of Contents
             {
                 "id": "section_toc",
@@ -529,6 +486,7 @@ class WordPressService:
                                 "elType": "widget",
                                 "widgetType": "accordion",
                                 "settings": {
+                                    "faq_schema": "yes",
                                     "tabs": [
                                         {
                                             "_id": f"faq_{i+1}",
