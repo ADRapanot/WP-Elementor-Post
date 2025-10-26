@@ -339,23 +339,10 @@ class WordPressService:
         except Exception as e:
             self.logger.error(f"Error updating AIOSEO meta: {e}")
    
-    async def publish_elementor_widgets_meta(self):
+    async def publish_elementor_widgets_meta(self, content_html:  str, faq_items: List[dict]) :
         """Fixed test function with proper vertical layout structure"""
-        content_html = """
-        <h2>Introduction</h2>
-        <p>This is the intro section.</p>
-        <h2>Topic A</h2>
-        <p>Details about topic A.</p>
-        <h3>Subtopic A-1</h3>
-        <p>Extra info.</p>
-        """
-
-        faq_items = [
-            {"question": "Why is AI cool?", "answer": "It learns and adapts."},
-            {"question": "Is Grok free?", "answer": "Yes, with limits."},
-            {"question": "How do I start?", "answer": "Just ask a question!"},
-        ]
-
+        
+        toc_title = "Table of Contents"
         elementor_data = [
             # SECTION 1: Table of Contents
             {
@@ -388,7 +375,11 @@ class WordPressService:
                                 "elType": "widget",
                                 "widgetType": "table-of-contents",
                                 "settings": {
-                                    "title": "In This Article",
+                                    "title": toc_title,
+                                    "_css_classes": "custom-toc-black",
+                                    "custom_css": "selector .elementor-toc__header-title { color: #000000 !important; }",
+                                    "title_typography_typography": "custom",
+                                    "title_typography_color": "#000000" ,
                                     "hierarchical_view": "yes",
                                     "headings_by_tags": ["h2", "h3"],
                                     "container": "",
@@ -396,7 +387,8 @@ class WordPressService:
                                     "marker_view": "numbers",
                                     "icon": {"value": "", "library": ""},
                                     "collapse_subitems": "no",
-                                    "minimized_on": "mobile"
+                                    "minimized_on": "mobile",
+                                    
                                 },
                                 "elements": []
                             }
@@ -462,7 +454,7 @@ class WordPressService:
                         "isLinked": False
                     },
                     "background_background": "classic",
-                    "background_color": "#f8f9fa"
+                    "background_color": "#F8F9FA"
                 },
                 "elements": [
                     {
@@ -479,8 +471,12 @@ class WordPressService:
                                 "elType": "widget",
                                 "widgetType": "heading",
                                 "settings": {
-                                    "title": "Frequently Asked Questions",
-                                    "header_size": "h2"
+                                    "title": "FAQ",
+                                    "header_size": "h2",
+                                    "title_color": "#1D53DD",
+                                    "align": "center",
+                                    "align_tablet": "center",
+                                    "align_mobile": "center"
                                 },
                                 "elements": []
                             },
@@ -490,6 +486,7 @@ class WordPressService:
                                 "elType": "widget",
                                 "widgetType": "accordion",
                                 "settings": {
+                                    "faq_schema": "yes",
                                     "tabs": [
                                         {
                                             "_id": f"faq_{i+1}",
@@ -497,7 +494,30 @@ class WordPressService:
                                             "tab_content": f"<p>{item['answer']}</p>"
                                         }
                                         for i, item in enumerate(faq_items)
-                                    ]
+                                    ],
+                                    "icon": "fa fa-caret-right",
+                                    "icon_active": "fa fa-caret-down",
+                                    "icon_align": "right",
+                                    "title_color": "#1D53DD",
+                                    "title_hover_color": "#1D53DD",
+                                    "title_active_color": "#1D53DD",
+                                    "title_typography_typography": "custom",
+                                    "title_typography_font_weight": "bold",
+                                    "title_typography_font_weight_tablet": "bold",
+                                    "active_title_typography_font_weight": "bold",
+                                    "active_title_typography_font_weight_tablet": "bold",
+                                    "icon_color": "#1D53DD",
+                                    "icon_hover_color": "#1D53DD",
+                                    "icon_active_color": "#1D53DD",
+                                    "border_width": {
+                                        "unit": "px",
+                                        "top": "1",
+                                        "right": "0",
+                                        "bottom": "1",
+                                        "left": "0",
+                                        "isLinked": False
+                                    },
+                                    "border_color": "#E5E5E5"
                                 },
                                 "elements": []
                             }
@@ -506,209 +526,47 @@ class WordPressService:
                 ]
             }
         ]
-
+        # Prepare payload with FAQ Schema and publish status
         payload = {
             "title": "Test: Properly Structured Layout",
             "status": "draft",
             "content": "",
             "meta": {
-                "_elementor_data": json.dumps(elementor_data),
+                "_elementor_data": json.dumps(elementor_data, ensure_ascii=False),  # Prevent ASCII encoding issues
                 "_elementor_edit_mode": "builder",
-                "_elementor_version": "3.22.2"
+                "_elementor_version": "3.22.2",
+                "_elementor_css": "",  # Clear cached CSS
             }
         }
-
+        # Create the post
         res = await self.client.post(
             f"{self.api_url}/posts",
             json=payload
         )
         res.raise_for_status()
+        data = res.json() 
+
+        # Clean up to regenerate post css
+        await self.client.post(
+            f"{self.api_url}/posts/{data["id"]}",
+            json={
+                "meta": {
+                    "_elementor_css": "",  # Clear cached CSS
+                    "_elementor_edit_mode": "builder"
+                }
+            }
+        )
+        # Set status to publish
+        res = await self.client.post(
+           f"{self.api_url}/posts/{data["id"]}",
+            json={"status": "publish"}
+        )
         data = res.json()
         print("Post created:", data.get("link"))
         print("Layout should now display vertically with proper spacing!")
         return data
 
 
-    # ALTERNATIVE: Using Flexbox Containers (Elementor 3.16+)
-    async def test_with_flex_containers(self):
-        """Modern Elementor Flexbox container structure"""
-        content_html = """
-        <h2>Introduction</h2>
-        <p>This is the intro section.</p>
-        <h2>Topic A</h2>
-        <p>Details about topic A.</p>
-        <h3>Subtopic A-1</h3>
-        <p>Extra info.</p>
-        """
-
-        faq_items = [
-            {"question": "Why is AI cool?", "answer": "It learns and adapts."},
-            {"question": "Is Grok free?", "answer": "Yes, with limits."},
-            {"question": "How do I start?", "answer": "Just ask a question!"},
-        ]
-
-        elementor_data = [
-            {
-                "id": "root_container",
-                "elType": "container",
-                "settings": {
-                    "content_width": "full",
-                    "flex_direction": "column",
-                    "flex_gap": {"unit": "px", "size": 40},
-                    "padding": {
-                        "unit": "px",
-                        "top": "20",
-                        "right": "20",
-                        "bottom": "20",
-                        "left": "20",
-                        "isLinked": False
-                    }
-                },
-                "elements": [
-                    # TOC Container
-                    {
-                        "id": "container_toc",
-                        "elType": "container",
-                        "settings": {
-                            "content_width": "boxed",
-                            "flex_direction": "column",
-                            "padding": {
-                                "unit": "px",
-                                "top": "20",
-                                "right": "20",
-                                "bottom": "20",
-                                "left": "20",
-                                "isLinked": False
-                            }
-                        },
-                        "elements": [
-                            {
-                                "id": "widget_toc",
-                                "elType": "widget",
-                                "widgetType": "table-of-contents",
-                                "settings": {
-                                    "title": "In This Article",
-                                    "hierarchical_view": "yes",
-                                    "headings_by_tags": ["h2", "h3"],
-                                    "container": "",
-                                    "exclude_headings_by_selector": "",
-                                    "marker_view": "numbers",
-                                    "collapse_subitems": "no"
-                                },
-                                "elements": []
-                            }
-                        ]
-                    },
-                    
-                    # Content Container
-                    {
-                        "id": "container_content",
-                        "elType": "container",
-                        "settings": {
-                            "content_width": "boxed",
-                            "flex_direction": "column",
-                            "padding": {
-                                "unit": "px",
-                                "top": "20",
-                                "right": "20",
-                                "bottom": "20",
-                                "left": "20",
-                                "isLinked": False
-                            }
-                        },
-                        "elements": [
-                            {
-                                "id": "widget_text",
-                                "elType": "widget",
-                                "widgetType": "text-editor",
-                                "settings": {
-                                    "editor": content_html
-                                },
-                                "elements": []
-                            }
-                        ]
-                    },
-                    
-                    # FAQ Container
-                    {
-                        "id": "container_faq",
-                        "elType": "container",
-                        "settings": {
-                            "content_width": "boxed",
-                            "flex_direction": "column",
-                            "background_background": "classic",
-                            "background_color": "#f8f9fa",
-                            "padding": {
-                                "unit": "px",
-                                "top": "30",
-                                "right": "30",
-                                "bottom": "30",
-                                "left": "30",
-                                "isLinked": False
-                            },
-                            "border_radius": {
-                                "unit": "px",
-                                "top": "8",
-                                "right": "8",
-                                "bottom": "8",
-                                "left": "8",
-                                "isLinked": True
-                            }
-                        },
-                        "elements": [
-                            {
-                                "id": "widget_faq_heading",
-                                "elType": "widget",
-                                "widgetType": "heading",
-                                "settings": {
-                                    "title": "Frequently Asked Questions",
-                                    "header_size": "h2"
-                                },
-                                "elements": []
-                            },
-                            {
-                                "id": "widget_faq",
-                                "elType": "widget",
-                                "widgetType": "accordion",
-                                "settings": {
-                                    "tabs": [
-                                        {
-                                            "_id": f"faq_{i+1}",
-                                            "tab_title": item["question"],
-                                            "tab_content": f"<p>{item['answer']}</p>"
-                                        }
-                                        for i, item in enumerate(faq_items)
-                                    ]
-                                },
-                                "elements": []
-                            }
-                        ]
-                    }
-                ]
-            }
-        ]
-
-        payload = {
-            "title": "Test: Flexbox Container Layout",
-            "status": "draft",
-            "content": "",
-            "meta": {
-                "_elementor_data": json.dumps(elementor_data),
-                "_elementor_edit_mode": "builder",
-                "_elementor_version": "3.22.2",
-                "_elementor_page_settings": json.dumps({"container_width": {"unit": "px", "size": 1140}})
-            }
-        }
-
-        res = await self.client.post(
-            f"{self.api_url}/posts",
-            json=payload
-        )
-        res.raise_for_status()
-        data = res.json()
-        print("Post created:", data.get("link"))
-        print("Modern flexbox layout with vertical stacking!")
-        return data
     async def close(self):
         """Close the HTTP client."""
         await self.client.aclose()
