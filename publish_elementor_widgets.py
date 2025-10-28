@@ -9,7 +9,13 @@ wp_service = WordPressService(
         cookies=None
     )
 async def publish():
-    await wp_service.login_with_credentials()
+    try:
+        await wp_service.login_with_credentials()
+    except Exception as e:
+        print(f"Login failed: {e}")
+        return
+    
+    
 
     try: 
         await wp_service.publish_elementor_widgets_meta()   
