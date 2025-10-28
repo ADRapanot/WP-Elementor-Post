@@ -35,14 +35,6 @@ class WordPressService:
             headers={"Content-Type": "application/json"}
         )
 
-        # If cookies were provided (for example copied from browser), set them
-        if cookies:
-            try:
-                for k, v in cookies.items():
-                    self.client.cookies.set(k, v)
-                self.logger.info("Initialized client with provided cookies")
-            except Exception:
-                self.logger.warning("Failed to set provided cookies on client")
 
     async def _request_json(self, method: str, url: str, **kwargs):
         """Helper to make an HTTP request and parse JSON with improved error logging.
@@ -63,35 +55,14 @@ class WordPressService:
         except Exception as e:
             raise ValueError(f"Invalid HTTP method: {method}") from e
 
-        # If client has no cookies, try to load from .wp_cookies.json in repo root
+        
         try:
             has_cookies = bool(getattr(self.client, 'cookies', None) and len(self.client.cookies.keys()) > 0)
         except Exception:
             has_cookies = False
 
         if not has_cookies:
-            try:
-                # Prefer wp_config.json via config.py (if present)
-                from config import get_config
-                cfg = get_config()
-                raw = cfg.get('cookies') if isinstance(cfg, dict) else None
-                if not raw:
-                    # Fall back to .wp_cookies.json for backward compatibility
-                    import json as _json
-                    from pathlib import Path
-                    p = Path(__file__).resolve().parent / '.wp_cookies.json'
-                    if p.exists():
-                        raw = _json.loads(p.read_text())
-
-                if isinstance(raw, dict):
-                    for k, v in raw.items():
-                        try:
-                            self.client.cookies.set(k, v)
-                        except Exception:
-                            pass
-                    self.logger.debug(f"Loaded {len(raw)} cookies from configuration")
-            except Exception:
-                pass
+            return ValueError("No cookies set on HTTP client; authentication may fail.")
 
         response = await client_method(url, **kwargs)
         try:
