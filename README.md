@@ -2,27 +2,15 @@
 
 This project publishes posts to WordPress with Elementor components and Ultimate FAQ items. It includes utilities to:
 
-- Publish articles with an Elementor Table of Contents shortcode.
-- Publish Elementor Accordion FAQ items (CPT `ufaq`) and insert an FAQ shortcode and JSON-LD schema.
-- Use browser cookies to bypass WAF (Incapsula) challenges for testing.
+- Publish articles with an Elementor Table of Contents.
+- Publish Elementor Accordion FAQ items and FAQ schema.
 
-This README explains configuration, cookie handling, and how to run the included scripts.
+This README explains configuration and how to run the included scripts.
 
 ## Files of interest
 
 - `wordpress_service.py` — low-level HTTP client and helpers for interacting with the WP REST API.
 - `publish_elementor_widgets.py` — example scripts demonstrating usage.
-- `config.json` — configuration file for Elementor template id.
-
-## Configuration (wp_config.json)
-
-Create or edit `config.json` at the repo root. Example format:
-
-{
-"elementor_template_id": 1425
-}
-
-- `elementor_template_id` (optional): the Elementor template id used for the TOC shortcode (defaults to `1425`).
 
 ## Running locally (macOS)
 
