@@ -9,6 +9,13 @@ wp_service = WordPressService(
         cookies=None
     )
 async def publish():
+    try:
+        await wp_service.login_with_credentials()
+    except Exception as e:
+        print(f"Login failed: {e}")
+        return
+    
+    
     await wp_service.login_with_credentials()
     content_html = """
         <h2>Introduction</h2>
